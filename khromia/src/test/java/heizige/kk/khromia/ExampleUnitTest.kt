@@ -1,4 +1,4 @@
-package heizige.kk.kit
+package heizige.kk.khromia
 
 import org.junit.Test
 

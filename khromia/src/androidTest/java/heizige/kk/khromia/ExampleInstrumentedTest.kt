@@ -1,4 +1,4 @@
-package heizige.kk.kit
+package heizige.kk.khromia
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
