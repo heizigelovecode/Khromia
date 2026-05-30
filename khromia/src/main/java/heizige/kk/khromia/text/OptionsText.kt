@@ -13,5 +13,5 @@ fun OptionsText(text: String) {
 
 @Composable
 fun OptionText(text: String) {
-    Text(text = text, lineHeight = 24.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.87f), maxLines = 1, fontSize = 16.sp)
+    Text(text = text, lineHeight = 24.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f), maxLines = 1, fontSize = 16.sp)
 }
