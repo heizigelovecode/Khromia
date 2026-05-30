@@ -81,7 +81,7 @@ private fun ToastCard(
             .alpha(0.8f)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxSize(),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -94,7 +94,6 @@ private fun ToastCard(
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
-                modifier = Modifier.weight(1f),
                 text = model.message,
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,

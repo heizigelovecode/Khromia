@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import heizige.kk.khromia.components.BottomSheet
 import heizige.kk.khromia.components.GlobalToastHost
 import heizige.kk.khromia.helper.Toast
 import heizige.kk.khromia.ui.theme.KhromiaTheme
@@ -56,28 +55,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             Text("显示 BottomSheet")
         }
 
-        BottomSheet(
-            visible = showBottomSheet,
-            onDismiss = { showBottomSheet = false },
-            enablePredictiveBack = true  // 开启预测返回
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("标题", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("支持预测返回手势！")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { showBottomSheet = false },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("关闭")
-                }
-            }
-        }
 }
 }
 
