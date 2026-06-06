@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,25 +29,27 @@ import androidx.compose.ui.unit.sp
 import heizige.kk.khromia.text.OptionText
 
 @Composable
-fun Option(
+fun OptionItem(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    painter: Painter,
     title: String,
     subtitle: String? = null,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp)
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f))
+            .clip(shape)
+            .background(backgroundColor)
             .clickable { onCheckedChange(!checked) }
             .padding(12.dp)
     ) {
         Icon(
-            imageVector = icon,
+            painter = painter,
             contentDescription = null,
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)

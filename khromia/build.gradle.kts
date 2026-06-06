@@ -7,8 +7,8 @@ plugins {
 android {
     namespace = "heizige.kk.khromia"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 0
         }
     }
 
@@ -70,7 +70,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "heizige.kk"
                 artifactId = "khromia"
-                version = "1.1.2"
+                version = "1.2.1"
 
                 from(components["release"])
             }

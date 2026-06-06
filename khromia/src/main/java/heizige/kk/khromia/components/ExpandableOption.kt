@@ -34,7 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,12 +45,15 @@ import androidx.compose.ui.unit.sp
 import heizige.kk.khromia.text.OptionText
 
 @Composable
-fun ExpandableSettingItem(
+fun ExpandableOptionItem(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    painter: Painter,
     title: String,
     subtitle: String? = null,
     initiallyExpanded: Boolean = false,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
@@ -64,8 +70,8 @@ fun ExpandableSettingItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f))
+            .clip(shape)
+            .background(backgroundColor)
             .clickable { isExpanded = !isExpanded }
             .animateContentSize(
                 animationSpec = spring(
@@ -79,7 +85,7 @@ fun ExpandableSettingItem(
             modifier = Modifier.fillMaxWidth().padding(12.dp)
         ) {
             Icon(
-                imageVector = icon,
+                painter = painter,
                 contentDescription = null,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
@@ -131,8 +137,8 @@ fun ExpandableSettingItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f), RoundedCornerShape(16.dp))
-                    .padding(12.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(contentColor)
             ) {
                 content()
             }
