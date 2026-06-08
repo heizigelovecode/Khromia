@@ -1,0 +1,10 @@
+<resources>
+    <string name="bottom_sheet_dismiss">关闭</string>"
+    <string name="bottom_sheet_random_color">随机颜色</string>
+
+    <string name="edit_dialog_confirm">确认</string>
+    <string name="edit_dialog_cancel">取消</string>
+    <string name="edit_dialog_error_invalid_number">请输入有效的数字</string>
+    <string name="edit_dialog_error_range">范围: %1$s - %2$s</string>
+    <string name="edit_dialog_error_max_length">超过最大长度 (%1$d)</string>
+</resources>

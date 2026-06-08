@@ -22,10 +22,9 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -66,19 +65,22 @@ private fun ToastCard(
         MaterialTheme.colorScheme.inverseOnSurface.harmonizeWithPrimary()
     }
 
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
+    Surface(
+        color = containerColor.copy(alpha = 0.87f), // 将透明度应用在颜色上，而不是整个图层
+        contentColor = contentColor,
         shape = CircleShape,
-        elevation = CardDefaults.cardElevation(0.dp),
         modifier = modifier
             .padding(bottom = 48.dp)
             .systemBarsPadding()
             .heightIn(min = 48.dp)
             .widthIn(max = 300.dp)
-            .alpha(0.8f)
+            .graphicsLayer {
+                // 关键点：通过 graphicsLayer 强制渲染阴影
+                // 这能保证在 scale 和 fade 动画过程中阴影依然存在
+                shadowElevation = 12.dp.toPx()
+                shape = CircleShape
+                clip = true
+            }
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),

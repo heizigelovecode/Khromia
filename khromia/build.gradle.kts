@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.windowsizeclass)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,8 +72,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "heizige.kk"
                 artifactId = "khromia"
-                version = "1.2.1"
-
+                version = "1.4.0"
                 from(components["release"])
             }
         }

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Khromia</string>
+    <string name="test_toast">测试</string>
+    <string name="show_bottom_sheet">显示 BottomSheet</string>
+    <string name="open_edit_dialog">打开编辑弹窗</string>
+    <string name="waiting_input">等待输入...</string>
+    <string name="user_info_edit">用户信息编辑</string>
+    <string name="field_name">姓名</string>
+    <string name="field_age">年龄</string>
+    <string name="field_custom">自定义校验 (输入 \'pass\')</string>
+    <string name="placeholder_name">请输入姓名</string>
+    <string name="placeholder_age">请输入年龄</string>
+    <string name="error_must_pass">必须输入 \'pass\'</string>
+    <string name="save_success">保存成功</string>
+    <string name="result_format">姓名: %1$s, 年龄: %2$s, 校验: %3$s</string>
+</resources>

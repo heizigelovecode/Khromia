@@ -38,6 +38,8 @@ class BottomSheetLayout(
 
     private var content: @Composable () -> Unit by mutableStateOf({})
 
+    private var backCallback: androidx.activity.OnBackPressedCallback? = null
+
     init {
         id = android.R.id.content
         setViewTreeLifecycleOwner(composeView.findViewTreeLifecycleOwner())
@@ -45,7 +47,7 @@ class BottomSheetLayout(
         setViewTreeSavedStateRegistryOwner(composeView.findViewTreeSavedStateRegistryOwner())
 
         if (enablePredictiveBack) {
-            backDispatcher?.addCallback(object : androidx.activity.OnBackPressedCallback(true) {
+            backCallback = object : androidx.activity.OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     onDismiss()
                 }
@@ -53,7 +55,14 @@ class BottomSheetLayout(
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
 
                 }
-            })
+            }.also { callback ->
+                val lifecycleOwner = composeView.findViewTreeLifecycleOwner()
+                if (lifecycleOwner != null) {
+                    backDispatcher?.addCallback(lifecycleOwner, callback)
+                } else {
+                    backDispatcher?.addCallback(callback)
+                }
+            }
         }
     }
 
@@ -86,16 +95,13 @@ class BottomSheetLayout(
     }
 
     fun dismiss() {
+        backCallback?.remove()
+        backCallback = null
         setViewTreeLifecycleOwner(null)
         decorView.removeView(this)
     }
 
-    // 改造点：处理返回键分发，确保 BottomSheet 优先处理
     override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
-        if (event.keyCode == android.view.KeyEvent.KEYCODE_BACK) {
-            onDismiss()
-            return true
-        }
         return super.dispatchKeyEvent(event)
     }
 }

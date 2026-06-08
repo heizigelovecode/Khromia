@@ -1,0 +1,10 @@
+<resources>
+    <string name="bottom_sheet_dismiss">Dismiss</string>"
+    <string name="bottom_sheet_random_color">Random color</string>
+
+    <string name="edit_dialog_confirm">Confirm</string>
+    <string name="edit_dialog_cancel">Cancel</string>
+    <string name="edit_dialog_error_invalid_number">Please enter a valid number</string>
+    <string name="edit_dialog_error_range">Range: %1$s - %2$s</string>
+    <string name="edit_dialog_error_max_length">Max length exceeded (%1$d)</string>
+</resources>

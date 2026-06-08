@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Khromia</string>
+    <string name="test_toast">test</string>
+    <string name="show_bottom_sheet">Show BottomSheet</string>
+    <string name="open_edit_dialog">Open Edit Dialog</string>
+    <string name="waiting_input">Waiting for input...</string>
+    <string name="user_info_edit">User Info Edit</string>
+    <string name="field_name">Name</string>
+    <string name="field_age">Age</string>
+    <string name="field_custom">Custom Validation (enter \'pass\')</string>
+    <string name="placeholder_name">Enter name</string>
+    <string name="placeholder_age">Enter age</string>
+    <string name="error_must_pass">Must enter \'pass\'</string>
+    <string name="save_success">Save success</string>
+    <string name="result_format">Name: %1$s, Age: %2$s, Custom: %3$s</string>
 </resources>
