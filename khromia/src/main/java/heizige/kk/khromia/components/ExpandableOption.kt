@@ -25,8 +25,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +45,108 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import heizige.kk.khromia.text.OptionText
+
+import androidx.compose.runtime.LaunchedEffect
+// ... other imports
+
+@Composable
+fun ExpandableOptionItem(
+    modifier: Modifier = Modifier,
+    painter: Painter,
+    title: String,
+    subtitle: String? = null,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(checked) }
+
+    LaunchedEffect(checked) {
+        isExpanded = checked
+    }
+
+    LaunchedEffect(checked) {
+        isExpanded = checked
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable { onCheckedChange(!checked) }
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(12.dp)
+        ) {
+            Icon(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                    .padding(8.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+                OptionText(text = title)
+                if (subtitle != null) {
+                    AnimatedVisibility(
+                        visible = !isExpanded,
+                        enter = expandVertically(
+                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
+                        ) + fadeIn(
+                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
+                        ),
+                        exit = shrinkVertically(
+                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
+                        ) + fadeOut(
+                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
+                        )
+                    ) {
+                        Text(
+                            text = subtitle,
+                            lineHeight = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
+                            maxLines = 1,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            OptionSwitch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        }
+
+        if (isExpanded) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(contentColor)
+            ) {
+                content()
+            }
+        }
+    }
+}
 
 @Composable
 fun ExpandableOptionItem(
@@ -98,7 +202,6 @@ fun ExpandableOptionItem(
             Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
                 OptionText(text = title)
                 if (subtitle != null) {
-                    // 副标题动画：进入时弹，退出时快
                     AnimatedVisibility(
                         visible = !isExpanded,
                         enter = expandVertically(

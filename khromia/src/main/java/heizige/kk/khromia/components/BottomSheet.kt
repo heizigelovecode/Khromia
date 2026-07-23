@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
@@ -97,7 +98,7 @@ fun PrimaryBottomSheet(
     painter: Painter,
     dismissText: String? = null,
     onDismiss: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable (onDismiss: () -> Unit) -> Unit
 ) {
 
     val actualDismissText = dismissText ?: stringResource(R.string.bottom_sheet_dismiss)
@@ -129,21 +130,23 @@ fun PrimaryBottomSheet(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                val dismiss = LocalBottomSheetDismiss.current
-                Button(onClick = { dismiss() },  shapes = ButtonDefaults.shapes()) {
+                val onDismissAction = LocalBottomSheetDismiss.current
+                Button(onClick = { onDismissAction() },  shapes = ButtonDefaults.shapes()) {
                     Text(actualDismissText)
                 }
             }
         },
         content = {
+            val onDismissAction = LocalBottomSheetDismiss.current
             Column(modifier = Modifier.fillMaxWidth()) {
-                content()
+                content(onDismissAction)
             }
         }
     )
 
 }
 
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 @SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable

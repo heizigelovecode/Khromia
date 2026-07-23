@@ -72,7 +72,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "heizige.kk"
                 artifactId = "khromia"
-                version = "1.4.0"
+                version = "1.5.3"
                 from(components["release"])
             }
         }

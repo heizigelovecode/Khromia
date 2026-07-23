@@ -49,17 +49,8 @@ import heizige.kk.khromia.R
 import heizige.kk.khromia.helper.PredictiveBackHandler
 import heizige.kk.khromia.layout.FullscreenPopup
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * 编辑框配置类
- * @param label 标签文本
- * @param initialValue 初始值
- * @param placeholder 占位符
- * @param keyboardType 键盘类型 (例如 KeyboardType.Number)
- * @param range 数值范围 (仅在数字输入时有效)
- * @param maxLength 最大长度限制
- * @param onValidate 自定义校验逻辑，返回错误信息字符串，为 null 表示通过
- */
 data class EditFieldConfig(
     val label: String,
     val initialValue: String = "",
@@ -70,10 +61,7 @@ data class EditFieldConfig(
     val onValidate: ((String) -> String?)? = null
 )
 
-/**
- * 通用编辑弹窗组件
- * 支持多个编辑框、输入类型限制以及范围校验
- */
+
 @Composable
 fun EditDialog(
     visible: Boolean,
@@ -94,30 +82,25 @@ fun EditDialog(
     val errRangeTemplate = stringResource(R.string.edit_dialog_error_range)
     val errMaxLengthTemplate = stringResource(R.string.edit_dialog_error_max_length)
 
-    // 使用 state 列表保存每个输入框的值
     val values = remember(fields) {
         mutableStateListOf<String>().apply {
             addAll(fields.map { it.initialValue })
         }
     }
 
-    // 自动同步初始值（当 fields 发生变化时）
     LaunchedEffect(fields) {
         values.clear()
         values.addAll(fields.map { it.initialValue })
     }
 
-    // 计算每个输入框的错误状态
     val errorMessages = fields.mapIndexed { index, config ->
         val value = values[index]
-        
-        // 1. 基础数字校验
+
         if (config.keyboardType == KeyboardType.Number || config.keyboardType == KeyboardType.Decimal) {
             val num = value.toDoubleOrNull()
             if (value.isNotEmpty() && num == null) {
                 return@mapIndexed errInvalidNumber
             }
-            // 2. 范围校验
             if (num != null && config.range != null) {
                 if (num !in config.range) {
                     return@mapIndexed errRangeTemplate.format(config.range.start, config.range.endInclusive)
@@ -125,12 +108,10 @@ fun EditDialog(
             }
         }
 
-        // 3. 长度校验
         if (config.maxLength != null && value.length > config.maxLength) {
             return@mapIndexed errMaxLengthTemplate.format(config.maxLength)
         }
 
-        // 4. 自定义校验
         config.onValidate?.invoke(value)
     }
 
@@ -150,7 +131,7 @@ fun EditDialog(
     LaunchedEffect(shouldDismiss) {
         if (shouldDismiss) {
             isVisible = false
-            delay(200)
+            delay(200.milliseconds)
             onDismiss()
         }
     }
