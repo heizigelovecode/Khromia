@@ -195,7 +195,7 @@ Khromia/
 
 ## 致谢
 
-- Toast 通知组件的设计灵感来源于 [ImageToolbox](https://github.com/T8RIN/ImageToolbox) 项目
+- Toast 通知组件与 BottomSheet 底部弹窗的设计灵感来源于 [ImageToolbox](https://github.com/T8RIN/ImageToolbox) 项目
 
 ## License
 

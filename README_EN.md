@@ -195,7 +195,7 @@ Khromia/
 
 ## Acknowledgments
 
-- Toast notification component design inspired by [ImageToolbox](https://github.com/T8RIN/ImageToolbox)
+- Toast notification and BottomSheet components design inspired by [ImageToolbox](https://github.com/T8RIN/ImageToolbox)
 
 ## License
 
