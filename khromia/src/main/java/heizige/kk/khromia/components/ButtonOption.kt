@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,10 +30,60 @@ import heizige.kk.khromia.text.OptionText
 @Composable
 fun ButtonOption(
     modifier: Modifier = Modifier,
+    imageVector: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit,
+    iconContainerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f),
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp)
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable { onClick() }
+            .padding(12.dp)
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            modifier = Modifier
+                .background(iconContainerColor, CircleShape)
+                .padding(8.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
+            OptionText(text = title)
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+    }
+}
+
+
+@Composable
+fun ButtonOption(
+    modifier: Modifier = Modifier,
     painter: Painter,
     title: String,
     subtitle: String? = null,
     onClick: () -> Unit,
+    iconContainerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f),
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp)
 ) {
@@ -49,14 +100,14 @@ fun ButtonOption(
             painter = painter,
             contentDescription = null,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                .background(iconContainerColor, CircleShape)
                 .padding(8.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
         )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
             OptionText(text = title)
             if (subtitle != null) {
                 Text(
@@ -64,10 +115,11 @@ fun ButtonOption(
                     lineHeight = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
-                    maxLines = 1,
                     fontSize = 14.sp
                 )
             }
         }
+
+        Spacer(modifier = Modifier.width(12.dp))
     }
 }

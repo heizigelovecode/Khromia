@@ -26,8 +26,11 @@ fun Modifier.fadingEdge(
     right: Dp = 0.dp,
     strength: Float = 1f
 ): Modifier {
+    // 所有边都为 0 时无需淡化，直接返回，避免无谓的 offscreen 合成开销
+    if (top <= 0.dp && bottom <= 0.dp && left <= 0.dp && right <= 0.dp) return this
+
     val edgeAlpha = (1f - strength).coerceIn(0f, 1f)
-    
+
     return this
         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
         .drawWithContent {

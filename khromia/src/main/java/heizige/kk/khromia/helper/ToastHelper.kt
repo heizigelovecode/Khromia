@@ -1,5 +1,6 @@
 package heizige.kk.khromia.helper
 
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import heizige.kk.khromia.data.ToastManager
 import heizige.kk.khromia.data.ToastModel
@@ -19,6 +20,16 @@ object Toast {
             ToastModel(
                 message = message,
                 icon = icon,
+                isError = isError
+            )
+        )
+    }
+
+    fun show(message: String, painter: Painter, isError: Boolean = false) {
+        ToastManager.show(
+            ToastModel(
+                message = message,
+                painter = painter,
                 isError = isError
             )
         )

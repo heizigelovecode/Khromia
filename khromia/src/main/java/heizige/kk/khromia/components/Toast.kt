@@ -94,6 +94,13 @@ private fun ToastCard(
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
+            } else if (model.painter != null) {
+                Icon(
+                    painter = model.painter,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
                 text = model.message,

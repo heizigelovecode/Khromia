@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -117,6 +118,62 @@ fun PrimaryBottomSheet(
             Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f)).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement =Arrangement.Center){
                 Icon(
                     painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(text = title, style = MaterialTheme.typography.labelLarge)
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                val onDismissAction = LocalBottomSheetDismiss.current
+                Button(onClick = { onDismissAction() },  shapes = ButtonDefaults.shapes()) {
+                    Text(actualDismissText)
+                }
+            }
+        },
+        content = {
+            val onDismissAction = LocalBottomSheetDismiss.current
+            Column(modifier = Modifier.fillMaxWidth()) {
+                content(onDismissAction)
+            }
+        }
+    )
+
+}
+
+@Composable
+fun PrimaryBottomSheet(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    title: String,
+    imageVector: ImageVector,
+    dismissText: String? = null,
+    onDismiss: () -> Unit,
+    content: @Composable (onDismiss: () -> Unit) -> Unit
+) {
+
+    val actualDismissText = dismissText ?: stringResource(R.string.bottom_sheet_dismiss)
+
+    BasicBottomSheet(
+        visible = visible,
+        onDismiss = onDismiss,
+        modifier = modifier,
+        enablePredictiveBack = true,
+        dragHandle = {
+            Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f)).padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement =Arrangement.Center){
+                Box(modifier = Modifier.height(4.dp).width(64.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)))
+            }
+        },
+        bottomBar = {
+            Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f)).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement =Arrangement.Center){
+                Icon(
+                    imageVector = imageVector,
                     contentDescription = null,
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
@@ -317,10 +374,15 @@ fun BasicBottomSheet(
         }
     }
 
+    // 只在首次组合时设置 Sheet 内容，避免每次重组都 re-grin 整份子 Composition
+    var contentInitialized by remember { mutableStateOf(false) }
     SideEffect {
-        bottomSheetLayout.updateContent {
-            CompositionLocalProvider(LocalBottomSheetDismiss provides triggerDismiss) {
-                SheetContent()
+        if (!contentInitialized) {
+            contentInitialized = true
+            bottomSheetLayout.updateContent {
+                CompositionLocalProvider(LocalBottomSheetDismiss provides triggerDismiss) {
+                    SheetContent()
+                }
             }
         }
     }

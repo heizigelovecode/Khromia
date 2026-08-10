@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import heizige.kk.khromia.text.OptionText
@@ -59,19 +57,68 @@ fun OptionItem(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
             OptionText(text = title)
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     lineHeight = 16.sp,
-                    fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
-                    maxLines = 1,
                     fontSize = 14.sp
                 )
             }
         }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        content()
+    }
+}
+
+@Composable
+fun OptionItem(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp),
+    content: @Composable () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable { onClick() }
+            .padding(12.dp)
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                .padding(8.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
+            OptionText(text = title)
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    lineHeight = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
 
         content()
     }
@@ -109,19 +156,71 @@ fun OptionItem(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
             OptionText(text = title)
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     lineHeight = 16.sp,
-                    fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
-                    maxLines = 1,
                     fontSize = 14.sp
                 )
             }
         }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        OptionSwitch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun OptionItem(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    shape: Shape = RoundedCornerShape(20.dp)
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable { onCheckedChange(!checked) }
+            .padding(12.dp)
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                .padding(8.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
+            OptionText(text = title)
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    lineHeight = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.54f),
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
 
         OptionSwitch(
             checked = checked,
