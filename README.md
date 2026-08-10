@@ -193,6 +193,10 @@ Khromia/
     └── libs.versions.toml
 ```
 
+## 致谢
+
+- Toast 通知组件的设计灵感来源于 [ImageToolbox](https://github.com/T8RIN/ImageToolbox) 项目
+
 ## License
 
 本项目仅供学习与个人使用。
