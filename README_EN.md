@@ -85,6 +85,18 @@ fun App() {
 Toast.show("Operation successful")
 Toast.show("Something went wrong", isError = true)
 Toast.show("Info", Icons.Default.Info, isError = false)
+// Keep the custom Compose layout visible when alwaysShow is true
+Toast.showCustom(alwaysShow = true) {
+    Surface(shape = RoundedCornerShape(24.dp), tonalElevation = 6.dp) {
+        Row(Modifier.padding(16.dp)) {
+            Icon(Icons.Default.Info, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Custom long toast")
+        }
+    }
+}
+// Explicitly close the persistent toast when appropriate
+Toast.dismiss()
 ```
 
 ### Bottom Sheet

@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,6 +57,7 @@ fun ExpandableOptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(bottom = 12.dp, start = 12.dp, end = 12.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(checked) }
@@ -131,7 +133,7 @@ fun ExpandableOptionItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                    .padding(contentPadding)
                     .clip(RoundedCornerShape(16.dp))
                     .background(contentColor)
             ) {
@@ -152,6 +154,7 @@ fun ExpandableOptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(bottom = 12.dp, start = 12.dp, end = 12.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(checked) }
@@ -227,7 +230,7 @@ fun ExpandableOptionItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                    .padding(contentPadding)
                     .clip(RoundedCornerShape(16.dp))
                     .background(contentColor)
             ) {
@@ -247,6 +250,7 @@ fun ExpandableOptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(bottom = 12.dp, start = 12.dp, end = 12.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
@@ -329,7 +333,7 @@ fun ExpandableOptionItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                    .padding(contentPadding)
                     .clip(RoundedCornerShape(16.dp))
                     .background(contentColor)
             ) {
@@ -349,6 +353,7 @@ fun ExpandableOptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(bottom = 12.dp, start = 12.dp, end = 12.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
@@ -431,7 +436,7 @@ fun ExpandableOptionItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                    .padding(contentPadding)
                     .clip(RoundedCornerShape(16.dp))
                     .background(contentColor)
             ) {

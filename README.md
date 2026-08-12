@@ -85,6 +85,18 @@ fun App() {
 Toast.show("操作成功")
 Toast.show("出错了", isError = true)
 Toast.show("提示", Icons.Default.Info, isError = false)
+// alwaysShow = true 时一直显示
+Toast.showCustom(alwaysShow = true) {
+    Surface(shape = RoundedCornerShape(24.dp), tonalElevation = 6.dp) {
+        Row(Modifier.padding(16.dp)) {
+            Icon(Icons.Default.Info, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("自定义长提示")
+        }
+    }
+}
+// 需要时主动关闭常驻 Toast
+Toast.dismiss()
 ```
 
 ### 底部弹窗

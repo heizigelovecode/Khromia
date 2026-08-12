@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import heizige.kk.khromia.data.CustomToastModel
+import heizige.kk.khromia.data.ToastEntry
 import heizige.kk.khromia.data.ToastManager
 import heizige.kk.khromia.data.ToastModel
 import heizige.kk.khromia.data.harmonizeWithPrimary
@@ -115,7 +117,7 @@ private fun ToastCard(
 
 @Composable
 fun GlobalToastHost(durations: Long = 150L) {
-    val toastState = remember { mutableStateOf<ToastModel?>(null) }
+    val toastState = remember { mutableStateOf<ToastEntry?>(null) }
     val transitionState = remember { MutableTransitionState(false) }
     var isPopupActive by remember { mutableStateOf(false) }
 
@@ -131,7 +133,13 @@ fun GlobalToastHost(durations: Long = 150L) {
                 .filter { it }
                 .first()
 
-            delay(newToast.duration)
+            if (newToast.alwaysShow) {
+                ToastManager.dismissRevision
+                    .filter { it > newToast.dismissRevision }
+                    .first()
+            } else {
+                delay(newToast.duration)
+            }
 
             transitionState.targetState = false
 
@@ -171,8 +179,10 @@ fun GlobalToastHost(durations: Long = 150L) {
                         animationSpec = tween(durations.toInt())
                     )
                 ) {
-                    toastState.value?.let {
-                        ToastCard(model = it)
+                    when (val toast = toastState.value) {
+                        is ToastModel -> ToastCard(model = toast)
+                        is CustomToastModel -> toast.content()
+                        null -> Unit
                     }
                 }
             }
