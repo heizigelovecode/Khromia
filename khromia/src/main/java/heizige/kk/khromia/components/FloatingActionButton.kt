@@ -1,8 +1,7 @@
 package heizige.kk.khromia.components
 
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
+import heizige.kk.khromia.motion.fastSpatialSpec
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,10 +36,7 @@ private fun animatedFabCornerRadius(
     val isPressed by interactionSource.collectIsPressedAsState()
     return animateDpAsState(
         targetValue = if (isPressed) FabPressedCornerRadius else restingCornerRadius,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioNoBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
+        animationSpec = fastSpatialSpec(),
         label = "FabCornerRadius"
     ).value
 }
@@ -59,7 +55,7 @@ fun AnimatedFloatingActionButton(
     val cornerRadius = animatedFabCornerRadius(interactionSource, restingCornerRadius)
     FloatingActionButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.pressBounce(interactionSource),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
         containerColor = containerColor,
         contentColor = contentColor,
@@ -87,7 +83,7 @@ fun AnimatedExtendedFloatingActionButton(
         text = text,
         icon = icon,
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.pressBounce(interactionSource),
         expanded = expanded,
         shape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
         containerColor = containerColor,
@@ -111,10 +107,7 @@ fun AnimatedToggleFloatingActionButton(
     val restingCornerRadius = defaultCornerRadius(if (checked) 1f else 0f)
     val cornerRadius by animateDpAsState(
         targetValue = if (isPressed) FabPressedCornerRadius else restingCornerRadius,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioNoBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
+        animationSpec = fastSpatialSpec(),
         label = "ToggleFabCornerRadius"
     )
 

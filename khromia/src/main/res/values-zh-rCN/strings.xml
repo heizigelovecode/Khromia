@@ -7,4 +7,8 @@
     <string name="edit_dialog_error_invalid_number">请输入有效的数字</string>
     <string name="edit_dialog_error_range">范围: %1$s - %2$s</string>
     <string name="edit_dialog_error_max_length">超过最大长度 (%1$d)</string>
+    <string name="slider_reset_title">恢复默认</string>
+    <string name="slider_reset_body">要将此项恢复为默认值吗？</string>
+    <string name="slider_reset_confirm">恢复</string>
+    <string name="slider_reset_cancel">取消</string>
 </resources>

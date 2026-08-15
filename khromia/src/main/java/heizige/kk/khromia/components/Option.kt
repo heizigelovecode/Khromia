@@ -2,7 +2,9 @@ package heizige.kk.khromia.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,13 +40,19 @@ fun OptionItem(
     shape: Shape = RoundedCornerShape(20.dp),
     content: @Composable () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = Modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onClick() }
             .padding(12.dp)
     ) {
         Icon(
@@ -73,6 +82,7 @@ fun OptionItem(
 
         content()
     }
+    }
 }
 
 @Composable
@@ -86,13 +96,19 @@ fun OptionItem(
     shape: Shape = RoundedCornerShape(20.dp),
     content: @Composable () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = Modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onClick() }
             .padding(12.dp)
     ) {
         Icon(
@@ -122,6 +138,7 @@ fun OptionItem(
 
         content()
     }
+    }
 }
 
 
@@ -142,7 +159,7 @@ fun OptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onCheckedChange(!checked) }
+            .bouncyClickable { onCheckedChange(!checked) }
             .padding(12.dp)
     ) {
         Icon(
@@ -194,7 +211,7 @@ fun OptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onCheckedChange(!checked) }
+            .bouncyClickable { onCheckedChange(!checked) }
             .padding(12.dp)
     ) {
         Icon(

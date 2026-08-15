@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.view.Gravity
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
@@ -38,17 +41,22 @@ import java.util.UUID
 fun FullscreenPopup(
     modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
+    /**
+     * 为 true 时窗口仅包裹内容高度并贴底，空白区域触摸穿透到下层（适合 Toast）。
+     */
+    passThroughTouches: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val view = LocalView.current
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
     val popupId = rememberSaveable { UUID.randomUUID() }
-    val popupLayout = remember {
+    val popupLayout = remember(passThroughTouches) {
         PopupLayout(
             onDismiss = onDismiss,
             composeView = view,
-            popupId = popupId
+            popupId = popupId,
+            passThroughTouches = passThroughTouches
         ).apply {
             setContent(parentComposition) {
                 Box(modifier.semantics { this.popup() }) {
@@ -84,7 +92,8 @@ fun FullscreenPopup(
 private class PopupLayout(
     private var onDismiss: (() -> Unit)?,
     composeView: View,
-    popupId: UUID
+    popupId: UUID,
+    private val passThroughTouches: Boolean
 ) : AbstractComposeView(composeView.context),
     ViewRootForInspector {
 
@@ -99,6 +108,11 @@ private class PopupLayout(
         setViewTreeSavedStateRegistryOwner(composeView.findViewTreeSavedStateRegistryOwner())
         // Set unique id for AbstractComposeView. This allows state restoration for the state
         // defined inside the Popup via rememberSaveable
+        if (passThroughTouches) {
+            isClickable = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+        }
     }
 
     private var content: @Composable () -> Unit by mutableStateOf({})
@@ -109,13 +123,20 @@ private class PopupLayout(
     fun show() {
         // Place popup above all current views
         z = decorView.children.maxOf { it.z } + 1
-        decorView.addView(
-            this,
-            0,
+        val params = if (passThroughTouches) {
+            FrameLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            )
+        } else {
             MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        )
+        }
+        decorView.addView(this, params)
 
-        requestFocus()
+        if (!passThroughTouches) {
+            requestFocus()
+        }
     }
 
     fun setContent(parent: CompositionContext, content: @Composable () -> Unit) {
@@ -127,6 +148,11 @@ private class PopupLayout(
     @Composable
     override fun Content() {
         content()
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (passThroughTouches) return false
+        return super.onTouchEvent(event)
     }
 
     @Suppress("ReturnCount")

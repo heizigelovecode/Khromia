@@ -267,11 +267,7 @@ fun BasicBottomSheet(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = backgroundAlpha))
-                .clickable(
-                    onClick = triggerDismiss,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ),
+                .bouncyClickable(triggerDismiss),
             contentAlignment = Alignment.BottomCenter
         ) {
             AnimatedVisibility(

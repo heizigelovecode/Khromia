@@ -146,11 +146,7 @@ fun EditDialog(
                 Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = dimAlpha))
-                    .clickable(
-                        onClick = triggerDismiss,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
+                    .bouncyClickable(triggerDismiss)
             )
 
             PredictiveBackHandler(

@@ -2,13 +2,12 @@ package heizige.kk.khromia.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import heizige.kk.khromia.motion.contentSizeSpec
+import heizige.kk.khromia.motion.expandFadeIn
+import heizige.kk.khromia.motion.fastSpatialSpec
+import heizige.kk.khromia.motion.shrinkFadeOut
+import heizige.kk.khromia.motion.spatialSpec
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,18 +51,18 @@ fun ExpandableOptionItem(
     painter: Painter,
     title: String,
     subtitle: String? = null,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    checked: Boolean? = null,
+    onCheckedChange: ((Boolean) -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
     contentPadding: PaddingValues = PaddingValues(bottom = 12.dp, start = 12.dp, end = 12.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(checked) }
+    var isExpanded by remember { mutableStateOf(checked ?: false) }
 
     LaunchedEffect(checked) {
-        isExpanded = checked
+        if (checked != null) isExpanded = checked
     }
 
     Column(
@@ -71,13 +70,14 @@ fun ExpandableOptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onCheckedChange(!checked) }
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .bouncyClickable {
+                if (onCheckedChange != null && checked != null) {
+                    onCheckedChange(!checked)
+                } else {
+                    isExpanded = !isExpanded
+                }
+            }
+            .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -99,16 +99,8 @@ fun ExpandableOptionItem(
                 if (subtitle != null) {
                     AnimatedVisibility(
                         visible = !isExpanded,
-                        enter = expandVertically(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ) + fadeIn(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ),
-                        exit = shrinkVertically(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        ) + fadeOut(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        )
+                        enter = expandFadeIn(),
+                        exit = shrinkFadeOut()
                     ) {
                         Text(
                             text = subtitle,
@@ -123,10 +115,21 @@ fun ExpandableOptionItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            OptionSwitch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
+            if (checked != null && onCheckedChange != null) {
+                OptionSwitch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowUp,
+                    contentDescription = null,
+                    modifier = Modifier.graphicsLayer {
+                        rotationZ = if (isExpanded) 0f else 180f
+                    },
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.64f)
+                )
+            }
         }
 
         if (isExpanded) {
@@ -168,13 +171,8 @@ fun ExpandableOptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { onCheckedChange(!checked) }
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .bouncyClickable { onCheckedChange(!checked) }
+            .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -196,16 +194,8 @@ fun ExpandableOptionItem(
                 if (subtitle != null) {
                     AnimatedVisibility(
                         visible = !isExpanded,
-                        enter = expandVertically(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ) + fadeIn(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ),
-                        exit = shrinkVertically(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        ) + fadeOut(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        )
+                        enter = expandFadeIn(),
+                        exit = shrinkFadeOut()
                     ) {
                         Text(
                             text = subtitle,
@@ -257,10 +247,7 @@ fun ExpandableOptionItem(
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) -180f else 0f,
-        animationSpec = spring(
-            dampingRatio = if (isExpanded) Spring.DampingRatioMediumBouncy else Spring.DampingRatioNoBouncy,
-            stiffness = if (isExpanded) Spring.StiffnessLow else Spring.StiffnessMedium
-        ),
+        animationSpec = if (isExpanded) spatialSpec() else fastSpatialSpec(),
         label = "rotation"
     )
 
@@ -269,13 +256,8 @@ fun ExpandableOptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { isExpanded = !isExpanded }
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .bouncyClickable { isExpanded = !isExpanded }
+            .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -297,16 +279,8 @@ fun ExpandableOptionItem(
                 if (subtitle != null) {
                     AnimatedVisibility(
                         visible = !isExpanded,
-                        enter = expandVertically(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ) + fadeIn(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ),
-                        exit = shrinkVertically(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        ) + fadeOut(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        )
+                        enter = expandFadeIn(),
+                        exit = shrinkFadeOut()
                     ) {
                         Text(
                             text = subtitle,
@@ -360,10 +334,7 @@ fun ExpandableOptionItem(
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) -180f else 0f,
-        animationSpec = spring(
-            dampingRatio = if (isExpanded) Spring.DampingRatioMediumBouncy else Spring.DampingRatioNoBouncy,
-            stiffness = if (isExpanded) Spring.StiffnessLow else Spring.StiffnessMedium
-        ),
+        animationSpec = if (isExpanded) spatialSpec() else fastSpatialSpec(),
         label = "rotation"
     )
 
@@ -372,13 +343,8 @@ fun ExpandableOptionItem(
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable { isExpanded = !isExpanded }
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .bouncyClickable { isExpanded = !isExpanded }
+            .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -400,16 +366,8 @@ fun ExpandableOptionItem(
                 if (subtitle != null) {
                     AnimatedVisibility(
                         visible = !isExpanded,
-                        enter = expandVertically(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ) + fadeIn(
-                            animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)
-                        ),
-                        exit = shrinkVertically(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        ) + fadeOut(
-                            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium)
-                        )
+                        enter = expandFadeIn(),
+                        exit = shrinkFadeOut()
                     ) {
                         Text(
                             text = subtitle,

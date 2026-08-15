@@ -2,7 +2,8 @@ package heizige.kk.khromia.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.tween
+import heizige.kk.khromia.motion.fastEffectsSpec
+import heizige.kk.khromia.motion.fastSpatialSpec
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,8 +21,11 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -32,6 +36,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/**
+ * Material 3 expressive slider.
+ *
+ * 拖动过程只更新视觉位置；[onValueChange] 仅在松手（或点击落点完成）时回调。
+ * 若需要跟手预览文案，可监听 [onVisualValueChange]。
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FancySlider(
@@ -42,14 +52,25 @@ fun FancySlider(
     steps: Int = 0,
     enabled: Boolean = true,
     onValueChangeFinished: (() -> Unit)? = null,
+    onVisualValueChange: ((Float) -> Unit)? = null,
     thumbSize: Dp = 24.dp,
     trackHeight: Dp = 36.dp,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isDragged by interactionSource.collectIsDraggedAsState()
+    var visualValue by remember { mutableFloatStateOf(value) }
+
+    LaunchedEffect(value, isDragged) {
+        if (!isDragged) {
+            visualValue = value
+            onVisualValueChange?.invoke(value)
+        }
+    }
+
     val animatedValue by animateFloatAsState(
-        targetValue = value,
-        animationSpec = if (isDragged) snap() else tween(100),
+        targetValue = visualValue,
+        animationSpec = if (isDragged) snap() else fastSpatialSpec(),
+        label = "FancySliderValue",
     )
 
     val rangeLength = valueRange.endInclusive - valueRange.start
@@ -61,7 +82,7 @@ fun FancySlider(
     val targetFraction = if (rangeLength == 0f) {
         0f
     } else {
-        ((value - valueRange.start) / rangeLength).coerceIn(0f, 1f)
+        ((visualValue - valueRange.start) / rangeLength).coerceIn(0f, 1f)
     }
 
     val colors = SliderDefaults.colors(
@@ -74,12 +95,18 @@ fun FancySlider(
 
     Slider(
         value = animatedValue,
-        onValueChange = onValueChange,
+        onValueChange = {
+            visualValue = it
+            onVisualValueChange?.invoke(it)
+        },
         modifier = modifier,
         valueRange = valueRange,
         steps = steps,
         enabled = enabled,
-        onValueChangeFinished = onValueChangeFinished,
+        onValueChangeFinished = {
+            onValueChange(visualValue)
+            onValueChangeFinished?.invoke()
+        },
         colors = colors,
         interactionSource = interactionSource,
         thumb = {
@@ -114,7 +141,8 @@ private fun SunThumb(
     val sunnyShape = MaterialShapes.Sunny.toShape()
     val rotation by animateFloatAsState(
         targetValue = fraction * 1080f,
-        animationSpec = if (animateRotation) tween(180) else snap(),
+        animationSpec = if (animateRotation) fastEffectsSpec() else snap(),
+        label = "FancySliderThumbRotation",
     )
 
     Box(
@@ -168,7 +196,7 @@ private fun FancySliderTrack(
             cornerRadius = CornerRadius(capRadius, capRadius),
         )
 
-        if (steps > 0) {
+        if (steps in 1..10) {
             val tickCount = steps + 1
             for (i in 1 until tickCount) {
                 val f = i.toFloat() / tickCount
