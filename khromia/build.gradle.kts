@@ -71,7 +71,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "heizige.kk"
                 artifactId = "khromia"
-                version = "1.6.4"
+                version = "1.6.5"
                 from(components["release"])
             }
         }
