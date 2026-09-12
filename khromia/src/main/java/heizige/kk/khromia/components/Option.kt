@@ -41,18 +41,14 @@ fun OptionItem(
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
-    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .padding(12.dp)
     ) {
         Icon(
@@ -81,7 +77,6 @@ fun OptionItem(
         Spacer(modifier = Modifier.width(12.dp))
 
         content()
-    }
     }
 }
 
@@ -97,18 +92,14 @@ fun OptionItem(
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
-    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .padding(12.dp)
     ) {
         Icon(
@@ -138,7 +129,6 @@ fun OptionItem(
 
         content()
     }
-    }
 }
 
 
@@ -153,13 +143,15 @@ fun OptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp)
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable { onCheckedChange(!checked) }
+            .clickable(interactionSource = interactionSource, indication = null) { onCheckedChange(!checked) }
             .padding(12.dp)
     ) {
         Icon(
@@ -205,13 +197,15 @@ fun OptionItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp)
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable { onCheckedChange(!checked) }
+            .clickable(interactionSource = interactionSource, indication = null) { onCheckedChange(!checked) }
             .padding(12.dp)
     ) {
         Icon(
@@ -245,3 +239,57 @@ fun OptionItem(
         )
     }
 }
+
+
+/** 插槽版 OptionItem：供宿主用 composable 内容（标题/副标题/前后置）复用组件库交互与样式。 */
+@Composable
+fun OptionItem(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onClick: () -> Unit,
+    shape: Shape = RoundedCornerShape(20.dp),
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
+    leadingContent: (@Composable () -> Unit)? = null,
+    overlineContent: (@Composable () -> Unit)? = null,
+    titleContent: (@Composable () -> Unit)? = null,
+    supportingContent: (@Composable () -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .pressBounce(interactionSource)
+            .fillMaxWidth()
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+            .padding(12.dp),
+    ) {
+        if (leadingContent != null) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                    .padding(8.dp),
+            ) {
+                leadingContent()
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+        }
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.weight(1f),
+        ) {
+            overlineContent?.invoke()
+            if (titleContent != null) titleContent() else Text(title)
+            supportingContent?.invoke()
+        }
+        if (trailingContent != null) {
+            Spacer(modifier = Modifier.width(12.dp))
+            trailingContent()
+        }
+    }
+}
+
+// composableSlotLoaded

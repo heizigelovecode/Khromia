@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Accessibility
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Edit
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -72,12 +74,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KhromiaTheme {
+                val context = LocalContext.current
                 GlobalToastHost()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
                         AnimatedFloatingActionButton(onClick = {
-                            Toast.show(stringResource(R.string.fab_clicked))
+                            Toast.show(context.getString(R.string.fab_clicked))
                         }) {
                             Icon(Icons.Filled.Edit, contentDescription = null)
                         }
@@ -92,6 +95,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun SettingsScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     Column(
@@ -130,7 +134,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier) {
             imageVector = Icons.Filled.Language,
             title = stringResource(R.string.opt_language),
             subtitle = stringResource(R.string.opt_language_desc),
-            onClick = { Toast.show(stringResource(R.string.toast_language)) }
+            onClick = { Toast.show(context.getString(R.string.toast_language)) }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -210,7 +214,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier) {
         ButtonOption(
             imageVector = Icons.Filled.Info,
             title = stringResource(R.string.opt_show_toast),
-            onClick = { Toast.show(stringResource(R.string.toast_hello), Icons.Filled.Check, isError = false) }
+            onClick = { Toast.show(context.getString(R.string.toast_hello), Icons.Filled.Check, isError = false) }
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -321,7 +325,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier) {
             imageVector = Icons.Filled.Share,
             title = stringResource(R.string.opt_share),
             subtitle = stringResource(R.string.opt_share_desc),
-            onClick = { Toast.show(stringResource(R.string.toast_share)) }
+            onClick = { Toast.show(context.getString(R.string.toast_share)) }
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -365,7 +369,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier) {
                     title = stringResource(R.string.opt_account),
                     subtitle = stringResource(R.string.opt_account_desc),
                     onClick = {
-                        Toast.show(stringResource(R.string.toast_account))
+                        Toast.show(context.getString(R.string.toast_account))
                         onDismiss()
                     }
                 )
@@ -395,17 +399,17 @@ private fun SettingsScreen(modifier: Modifier = Modifier) {
                     initialValue = "",
                     placeholder = stringResource(R.string.placeholder_email),
                     onValidate = { value ->
-                        if (value.isBlank()) stringResource(R.string.error_email_empty)
-                        else if (!value.contains("@")) stringResource(R.string.error_email_invalid)
+                        if (value.isBlank()) context.getString(R.string.error_email_empty)
+                        else if (!value.contains("@")) context.getString(R.string.error_email_invalid)
                         else null
                     }
                 )
             ),
             onDismiss = { showEditDialog = false },
             onConfirm = { results ->
-                editResult = stringResource(R.string.result_format, results[0], results[1], results[2])
+                editResult = context.getString(R.string.result_format, results[0], results[1], results[2])
                 showEditDialog = false
-                Toast.show(stringResource(R.string.toast_saved))
+                Toast.show(context.getString(R.string.toast_saved))
             }
         )
     }

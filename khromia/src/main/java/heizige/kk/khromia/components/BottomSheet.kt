@@ -1,7 +1,6 @@
 package heizige.kk.khromia.components
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Build
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.BackHandler
@@ -46,8 +45,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -70,7 +67,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -98,7 +94,11 @@ fun PrimaryBottomSheet(
     title: String,
     painter: Painter,
     dismissText: String? = null,
+    confirmText: String? = null,
+    onConfirm: (() -> Unit)? = null,
     onDismiss: () -> Unit,
+    scrollable: Boolean = true,
+    dismissible: Boolean = true,
     content: @Composable (onDismiss: () -> Unit) -> Unit
 ) {
 
@@ -109,6 +109,8 @@ fun PrimaryBottomSheet(
         onDismiss = onDismiss,
         modifier = modifier,
         enablePredictiveBack = true,
+        scrollable = scrollable,
+        dismissible = dismissible,
         dragHandle = {
             Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f)).padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement =Arrangement.Center){
                 Box(modifier = Modifier.height(4.dp).width(64.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)))
@@ -132,8 +134,16 @@ fun PrimaryBottomSheet(
                 Spacer(modifier = Modifier.weight(1f))
 
                 val onDismissAction = LocalBottomSheetDismiss.current
-                Button(onClick = { onDismissAction() },  shapes = ButtonDefaults.shapes()) {
-                    Text(actualDismissText)
+                if (dismissible || onConfirm != null) {
+                    Button(
+                        onClick = {
+                            val confirm = onConfirm
+                            if (confirm != null) confirm() else onDismissAction()
+                        },
+                        shapes = ButtonDefaults.shapes(),
+                    ) {
+                        Text(confirmText ?: actualDismissText)
+                    }
                 }
             }
         },
@@ -154,7 +164,11 @@ fun PrimaryBottomSheet(
     title: String,
     imageVector: ImageVector,
     dismissText: String? = null,
+    confirmText: String? = null,
+    onConfirm: (() -> Unit)? = null,
     onDismiss: () -> Unit,
+    scrollable: Boolean = true,
+    dismissible: Boolean = true,
     content: @Composable (onDismiss: () -> Unit) -> Unit
 ) {
 
@@ -165,6 +179,8 @@ fun PrimaryBottomSheet(
         onDismiss = onDismiss,
         modifier = modifier,
         enablePredictiveBack = true,
+        scrollable = scrollable,
+        dismissible = dismissible,
         dragHandle = {
             Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f)).padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement =Arrangement.Center){
                 Box(modifier = Modifier.height(4.dp).width(64.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)))
@@ -188,8 +204,16 @@ fun PrimaryBottomSheet(
                 Spacer(modifier = Modifier.weight(1f))
 
                 val onDismissAction = LocalBottomSheetDismiss.current
-                Button(onClick = { onDismissAction() },  shapes = ButtonDefaults.shapes()) {
-                    Text(actualDismissText)
+                if (dismissible || onConfirm != null) {
+                    Button(
+                        onClick = {
+                            val confirm = onConfirm
+                            if (confirm != null) confirm() else onDismissAction()
+                        },
+                        shapes = ButtonDefaults.shapes(),
+                    ) {
+                        Text(confirmText ?: actualDismissText)
+                    }
                 }
             }
         },
@@ -212,6 +236,8 @@ fun BasicBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     enablePredictiveBack: Boolean = true,
+    scrollable: Boolean = true,
+    dismissible: Boolean = true,
     dragHandle: @Composable () -> Unit,
     bottomBar: @Composable () -> Unit = {},
     content: @Composable () -> Unit
@@ -231,11 +257,6 @@ fun BasicBottomSheet(
 
     val bottomSheetData = remember { BottomSheetData() }
 
-    // 大屏检测逻辑
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-    val isWideScreen = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
-
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     // 高度限制：最大占屏幕 0.9
@@ -253,21 +274,28 @@ fun BasicBottomSheet(
         val coroutineScope = rememberCoroutineScope()
         var sheetHeight by remember { mutableFloatStateOf(0f) }
 
-        if (enablePredictiveBack && Build.VERSION.SDK_INT >= 33) {
-            PredictiveBackHandler(
-                backDispatcher = backDispatcher,
-                onProgress = { progress = it },
-                onDismiss = triggerDismiss
-            )
-        } else {
-            BackHandler(onBack = triggerDismiss)
+        if (dismissible) {
+            if (enablePredictiveBack && Build.VERSION.SDK_INT >= 33) {
+                PredictiveBackHandler(
+                    backDispatcher = backDispatcher,
+                    onProgress = { progress = it },
+                    onDismiss = triggerDismiss
+                )
+            } else {
+                BackHandler(onBack = triggerDismiss)
+            }
         }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = backgroundAlpha))
-                .bouncyClickable(triggerDismiss),
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    enabled = dismissible,
+                    onClick = triggerDismiss
+                ),
             contentAlignment = Alignment.BottomCenter
         ) {
             AnimatedVisibility(
@@ -288,7 +316,7 @@ fun BasicBottomSheet(
 
                 Surface(
                     modifier = modifier
-                        .fillMaxWidth(if (isWideScreen) 0.8f else 1f)
+                        .fillMaxWidth()
                         .heightIn(min = 100.dp, max = maxHeight)
                         .onGloballyPositioned { sheetHeight = it.size.height.toFloat() }
                         .offset { IntOffset(0, offsetY.value.coerceAtLeast(0f).toInt()) }
@@ -302,6 +330,7 @@ fun BasicBottomSheet(
                         .draggable(
                             state = draggableState,
                             orientation = Orientation.Vertical,
+                            enabled = dismissible,
                             onDragStopped = { velocity ->
                                 val currentOffset = offsetY.value
                                 val threshold = sheetHeight * 0.4f
@@ -321,7 +350,7 @@ fun BasicBottomSheet(
                 ) {
                     Column {
                         currentDragHandle()
-                        Column(modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                        Column(modifier = Modifier.weight(1f, fill = false).then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)) {
                             currentContent()
                         }
                         bottomBar()

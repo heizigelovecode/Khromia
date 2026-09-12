@@ -44,10 +44,10 @@ fun ButtonOption(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .pressBounce(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null) { onClick() }
             .padding(12.dp)
     ) {
@@ -95,10 +95,10 @@ fun ButtonOption(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .pressBounce(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null) { onClick() }
             .padding(12.dp)
     ) {

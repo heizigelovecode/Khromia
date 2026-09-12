@@ -10,6 +10,7 @@ import heizige.kk.khromia.motion.shrinkFadeOut
 import heizige.kk.khromia.motion.spatialSpec
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -60,6 +61,7 @@ fun ExpandableOptionItem(
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(checked ?: false) }
+    val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(checked) {
         if (checked != null) isExpanded = checked
@@ -67,10 +69,11 @@ fun ExpandableOptionItem(
 
     Column(
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable {
+            .clickable(interactionSource = interactionSource, indication = null) {
                 if (onCheckedChange != null && checked != null) {
                     onCheckedChange(!checked)
                 } else {
@@ -161,6 +164,7 @@ fun ExpandableOptionItem(
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(checked) }
+    val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(checked) {
         isExpanded = checked
@@ -168,10 +172,11 @@ fun ExpandableOptionItem(
 
     Column(
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable { onCheckedChange(!checked) }
+            .clickable(interactionSource = interactionSource, indication = null) { onCheckedChange(!checked) }
             .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
@@ -244,6 +249,7 @@ fun ExpandableOptionItem(
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
+    val interactionSource = remember { MutableInteractionSource() }
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) -180f else 0f,
@@ -253,10 +259,11 @@ fun ExpandableOptionItem(
 
     Column(
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable { isExpanded = !isExpanded }
+            .clickable(interactionSource = interactionSource, indication = null) { isExpanded = !isExpanded }
             .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
@@ -324,6 +331,7 @@ fun ExpandableOptionItem(
     title: String,
     subtitle: String? = null,
     initiallyExpanded: Boolean = false,
+    leadingContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     contentColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     shape: Shape = RoundedCornerShape(20.dp),
@@ -331,6 +339,7 @@ fun ExpandableOptionItem(
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
+    val interactionSource = remember { MutableInteractionSource() }
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) -180f else 0f,
@@ -340,24 +349,35 @@ fun ExpandableOptionItem(
 
     Column(
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .bouncyClickable { isExpanded = !isExpanded }
+            .clickable(interactionSource = interactionSource, indication = null) { isExpanded = !isExpanded }
             .animateContentSize(animationSpec = contentSizeSpec())
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().padding(12.dp)
         ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
-                    .padding(8.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
-            )
+            if (leadingContent != null) {
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                        .padding(8.dp),
+                ) {
+                    leadingContent()
+                }
+            } else {
+                Icon(
+                    imageVector = imageVector,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f), CircleShape)
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.87f)
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 

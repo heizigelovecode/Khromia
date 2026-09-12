@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +48,8 @@ import androidx.compose.ui.unit.sp
  * @param checkIconTint 选中图标的颜色
  * @param verticalPadding 垂直内边距
  * @param horizontalPadding 水平内边距
- * @param cornerRadius 圆角半径
+ * @param cornerRadius 圆角半径（未指定 [shape] 时生效）
+ * @param shape 自定义形状；分组列表用它做首尾大圆角
  */
 @Composable
 fun AnimatedRadioItem(
@@ -64,7 +66,8 @@ fun AnimatedRadioItem(
     checkIconTint: Color = MaterialTheme.colorScheme.primary,
     verticalPadding: Dp = 0.dp,
     horizontalPadding: Dp = 16.dp,
-    cornerRadius: Dp = 4.dp
+    cornerRadius: Dp = 4.dp,
+    shape: Shape = RoundedCornerShape(cornerRadius),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val themeBg by animateColorAsState(
@@ -75,11 +78,11 @@ fun AnimatedRadioItem(
 
     Box(
         modifier = modifier
+            .pressBounce(interactionSource)
             .fillMaxWidth()
             .padding(vertical = verticalPadding)
-            .clip(RoundedCornerShape(cornerRadius))
+            .clip(shape)
             .background(themeBg)
-            .pressBounce(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = 16.dp)
     ) {

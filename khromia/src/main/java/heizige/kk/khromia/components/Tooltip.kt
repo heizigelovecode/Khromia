@@ -17,7 +17,7 @@ import heizige.kk.khromia.data.harmonizeWithPrimary
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TooltipScope.TextTooltip(text: String) {
-    PlainTooltip(shape = CircleShape, containerColor = MaterialTheme.colorScheme.inverseSurface.harmonizeWithPrimary(), contentColor = MaterialTheme.colorScheme.surfaceVariant.harmonizeWithPrimary(), shadowElevation = 4.dp, modifier = Modifier.alpha(0.8f)) {1
+    PlainTooltip(shape = CircleShape, containerColor = MaterialTheme.colorScheme.inverseSurface.harmonizeWithPrimary(), contentColor = MaterialTheme.colorScheme.surfaceVariant.harmonizeWithPrimary(), shadowElevation = 4.dp, modifier = Modifier.alpha(0.8f)) {
         Text(text, Modifier.padding(4.dp))
     }
 }
