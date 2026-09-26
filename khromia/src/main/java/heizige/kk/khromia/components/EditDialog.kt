@@ -195,7 +195,7 @@ fun EditDialog(
                                 keyboardOptions = KeyboardOptions(keyboardType = config.keyboardType),
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
-                                shape = RoundedCornerShape(20.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                             if (index < fields.size - 1) {
                                 Spacer(modifier = Modifier.height(12.dp))
