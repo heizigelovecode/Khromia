@@ -25,6 +25,11 @@ fun PredictiveBackHandler(
             override fun handleOnBackProgressed(backEvent: BackEventCompat) {
                 currentOnProgress(backEvent.progress)
             }
+
+            override fun handleOnBackCancelled() {
+                // 手势取消时复位，避免内容卡在半途的位移状态。
+                currentOnProgress(0f)
+            }
         }
 
         backDispatcher?.addCallback(callback)

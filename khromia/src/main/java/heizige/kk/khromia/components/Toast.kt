@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,12 +36,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import heizige.kk.khromia.components.shape.AutoCornersShape
 import heizige.kk.khromia.data.CustomToastModel
 import heizige.kk.khromia.data.ToastEntry
 import heizige.kk.khromia.data.ToastManager
@@ -53,13 +54,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 
-private val ToastShape = RoundedCornerShape(32.dp)
-
 @Composable
 private fun ToastCard(
     model: ToastModel,
     modifier: Modifier = Modifier
 ) {
+    val shape = AutoCornersShape(32.dp)
     val containerColor = if (model.isError) {
         MaterialTheme.colorScheme.errorContainer.harmonizeWithPrimary()
     } else {
@@ -75,20 +75,20 @@ private fun ToastCard(
     Surface(
         color = containerColor,
         contentColor = contentColor,
-        shape = ToastShape,
+        shape = shape,
         modifier = modifier
             .padding(bottom = 48.dp)
             .systemBarsPadding()
             .heightIn(min = 48.dp)
             .widthIn(max = 300.dp)
             .graphicsLayer {
-                // 通过 graphicsLayer 强制渲染阴影，保证在 scale/fade 动画过程中阴影依然存在
-                // （ImageToolbox materialShadow 的默认 6.dp 高度、黑色 ambient/spot）
                 shadowElevation = 6.dp.toPx()
-                shape = ToastShape
+                ambientShadowColor = Color.Black
+                spotShadowColor = Color.Black
+                this.shape = shape
                 clip = true
             }
-            .alpha(0.95f) // ImageToolbox Toast 的 .alpha(0.95f) 应用在整个卡片图层
+            .alpha(0.95f)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),

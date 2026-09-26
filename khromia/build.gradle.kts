@@ -56,6 +56,8 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.5.0-alpha25")
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation("androidx.compose.material:material-icons-extended")
+    api("io.github.kyant0:capsule:2.1.3")
+    api("com.stoyanvuchev:squircle-shape-android:5.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
