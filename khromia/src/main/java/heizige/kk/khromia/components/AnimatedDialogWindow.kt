@@ -34,8 +34,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
-import android.view.WindowManager
 import heizige.kk.khromia.helper.PredictiveBackHandler
+import android.view.WindowManager
+import java.util.concurrent.atomic.AtomicBoolean
 
 private const val DialogMotionDurationMillis = 260
 
@@ -115,10 +116,13 @@ fun AnimatedDialogWindow(
     ) {
         // LocalView 的父级即 DialogLayout（DialogWindowProvider），用于关闭系统遮罩与窗口动画。
         val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        // 只需应用一次：动画过程中每次重组都改 Window attributes 会触发整窗 relayout。
+        val windowTuned = remember(dialogWindow) { AtomicBoolean(false) }
         SideEffect {
-            dialogWindow ?: return@SideEffect
-            dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            dialogWindow.attributes = dialogWindow.attributes.apply {
+            val window = dialogWindow ?: return@SideEffect
+            if (!windowTuned.compareAndSet(false, true)) return@SideEffect
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.attributes = window.attributes.apply {
                 dimAmount = 0f
                 windowAnimations = 0
             }
