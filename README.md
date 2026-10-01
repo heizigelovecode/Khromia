@@ -71,6 +71,8 @@ dependencies {
 
 ### Toast 通知
 
+`GlobalToastHost` 用于应用内 Toast。自动化场景可在前台显示应用内提示，切到其他应用后由宿主悬浮看板接管；点击提示卡片可提前隐藏提示。
+
 ```kotlin
 // 在应用根组件放置 GlobalToastHost
 @Composable

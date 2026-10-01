@@ -19,6 +19,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -93,20 +94,26 @@ fun FancySlider(
         inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
     )
 
-    Slider(
+    // material3 1.5.0-alpha29 起，value 版Slider 不再提供 track / thumb 插槽，
+    // 自定义外观只能走 state 版重载，所以这里用 rememberSliderState 承载值。
+    val sliderState = rememberSliderState(
         value = animatedValue,
-        onValueChange = {
-            visualValue = it
-            onVisualValueChange?.invoke(it)
-        },
-        modifier = modifier,
-        valueRange = valueRange,
         steps = steps,
+        trackRange = valueRange,
+    )
+
+    Slider(
+        state = sliderState,
         enabled = enabled,
         onValueChangeFinished = {
             onValueChange(visualValue)
             onValueChangeFinished?.invoke()
         },
+        onValueChange = {
+            visualValue = it
+            onVisualValueChange?.invoke(it)
+        },
+        modifier = modifier,
         colors = colors,
         interactionSource = interactionSource,
         thumb = {
@@ -118,9 +125,9 @@ fun FancySlider(
                 color = if (enabled) colors.thumbColor else colors.disabledThumbColor,
             )
         },
-        track = { sliderState ->
+        track = { state ->
             FancySliderTrack(
-                sliderState = sliderState,
+                sliderState = state,
                 steps = steps,
                 colors = colors,
                 trackHeight = trackHeight,

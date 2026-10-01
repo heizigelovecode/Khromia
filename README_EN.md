@@ -71,6 +71,8 @@ dependencies {
 
 ### Toast Notifications
 
+`GlobalToastHost` renders in-app toasts. Automation status can stay in the app while it is foregrounded and is handed to the host overlay when the app goes to the background; tapping the card dismisses the hint without cancelling the task.
+
 ```kotlin
 // Place GlobalToastHost at the root of your app
 @Composable

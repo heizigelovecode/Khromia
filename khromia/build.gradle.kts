@@ -53,7 +53,10 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.5.0-alpha25")
+    // 必须与 KhatKit（及 Kedge）解析到的 material3 版本一致：模块各自按
+    // 自己的声明编译，但打进同一个 APK 时用的是最高版本。版本不一致时编译能过，
+    // 运行期会 NoSuchMethodError（如 FancySlider 调 Slider 的旧重载）。
+    implementation("androidx.compose.material3:material3:1.5.0-alpha29")
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation("androidx.compose.material:material-icons-extended")
     api("io.github.kyant0:capsule:2.1.3")
