@@ -71,7 +71,7 @@ dependencies {
 
 ### Toast Notifications
 
-`GlobalToastHost` renders in-app toasts. Automation status can stay in the app while it is foregrounded and is handed to the host overlay when the app goes to the background; tapping the card dismisses the hint without cancelling the task.
+`GlobalToastHost` renders in-app toasts with ImageToolbox-style motion: a 300 ms fade-in with bottom-centered spring scale and half-height slide, followed by a 250 ms fade-out and 500 ms slide/ spring scale exit. Automation status can stay in the app while it is foregrounded and is handed to the host overlay when the app goes to the background; tapping the card dismisses the hint without cancelling the task.
 
 ```kotlin
 // Place GlobalToastHost at the root of your app

@@ -71,7 +71,7 @@ dependencies {
 
 ### Toast 通知
 
-`GlobalToastHost` 用于应用内 Toast。自动化场景可在前台显示应用内提示，切到其他应用后由宿主悬浮看板接管；点击提示卡片可提前隐藏提示。
+`GlobalToastHost` 用于应用内 Toast。动画采用 ImageToolbox 风格：300ms 淡入、底部中心弹性缩放和半高滑入，退出为 250ms 淡出、500ms 滑出与弹性缩放。自动化场景可在前台显示应用内提示，切到其他应用后由宿主悬浮看板接管；点击提示卡片可提前隐藏提示。
 
 ```kotlin
 // 在应用根组件放置 GlobalToastHost
