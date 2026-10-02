@@ -241,12 +241,22 @@ fun OptionItem(
 }
 
 
-/** 插槽版 OptionItem：供宿主用 composable 内容（标题/副标题/前后置）复用组件库交互与样式。 */
+/**
+ * 插槽版 OptionItem：供宿主用 composable 内容（标题/副标题/前后置）复用组件库交互与样式。
+ *
+ * [onClick] 传 `null` 表示纯信息行——此时整行不可点，**也不会有按压回弹**。
+ * 以前这里是必填的 `() -> Unit`，调用点只能给纯信息行传空 lambda 兜住，而
+ * [pressBounce] 与 [clickable] 都是无条件的，于是纯信息行按下去也会缩一下、
+ * 好像能点但什么都不发生。
+ *
+ * 本组件是**纯 MD3 实现**。Miuix 分支由 `heizige.kk.kedge.components.KedgeOptionItem`
+ * 分发，不要往这里塞 Miuix 代码。
+ */
 @Composable
 fun OptionItem(
     modifier: Modifier = Modifier,
     title: String = "",
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     shape: Shape = RoundedCornerShape(20.dp),
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.26f),
     leadingContent: (@Composable () -> Unit)? = null,
@@ -256,14 +266,20 @@ fun OptionItem(
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val clickable = onClick != null
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .pressBounce(interactionSource)
+            .pressBounce(interactionSource, enabled = clickable)
             .fillMaxWidth()
             .clip(shape)
             .background(backgroundColor)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = clickable,
+                onClick = { onClick?.invoke() },
+            )
             .padding(12.dp),
     ) {
         if (leadingContent != null) {
