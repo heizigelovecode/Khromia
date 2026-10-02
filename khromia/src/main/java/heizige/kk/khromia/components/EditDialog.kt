@@ -61,7 +61,60 @@ data class EditFieldConfig(
     val onValidate: ((String) -> String?)? = null
 )
 
+/**
+ * [EditFieldConfig] 列表的逐字段校验，纯函数、无 Composable 依赖。
+ *
+ * 单独抽出来是为了让 Miuix 分支（`KedgeEditDialog` → `MiuixEditDialog`）能共用同一份
+ * 规则。两边各写一遍的话，修一个校验 bug 要改两处，很容易漏。
+ *
+ * 错误文案由调用方以参数传入（原本是 `stringResource` 的结果，抽成纯函数后不能再
+ * 捕获 Composable 作用域）。
+ *
+ * @return 与 [fields] 等长的列表，元素为该字段的错误文案，`null` 表示通过。
+ */
+fun validateEditFields(
+    fields: List<EditFieldConfig>,
+    values: List<String>,
+    invalidNumberError: String,
+    rangeErrorTemplate: String,
+    maxLengthErrorTemplate: String,
+): List<String?> = fields.mapIndexed { index, config ->
+    val value = values.getOrElse(index) { "" }
 
+    if (config.keyboardType == KeyboardType.Number || config.keyboardType == KeyboardType.Decimal) {
+        val num = value.toDoubleOrNull()
+        if (value.isNotEmpty() && num == null) {
+            return@mapIndexed invalidNumberError
+        }
+        if (num != null && config.range != null) {
+            if (num !in config.range) {
+                return@mapIndexed rangeErrorTemplate.format(config.range.start, config.range.endInclusive)
+            }
+        }
+    }
+
+    if (config.maxLength != null && value.length > config.maxLength) {
+        return@mapIndexed maxLengthErrorTemplate.format(config.maxLength)
+    }
+
+    config.onValidate?.invoke(value)
+}
+
+
+/**
+ * 多字段编辑弹窗。
+ *
+ * **本组件是纯 MD3 实现**（28dp 圆角 + `OutlinedTextField`）。Miuix 分支由
+ * `heizige.kk.kedge.overlays.KedgeEditDialog` 分发，不要往这里塞 Miuix 代码。
+ *
+ * [visible] 转 `false` 时会先播完退场动画（`fadeOut` + `scaleOut`）再退出组合，
+ * 所以调用点应当**始终调用本组件并用 [visible] 控制显隐**，不要用
+ * `if (show) EditDialog(visible = true)` —— 那样退场动画永远播不出来。
+ *
+ * [onDismiss] 在**退场动画播完之后**才回调，两种关闭路径都会走它：
+ * 点取消 / 点 scrim / 系统返回手势（内部触发），以及调用点自己把 [visible] 置
+ * `false`（此时内部仍会等退场结束再回调，便于调用方在同一点释放状态）。
+ */
 @Composable
 fun EditDialog(
     visible: Boolean,
@@ -73,7 +126,12 @@ fun EditDialog(
     confirmText: String? = null,
     dismissText: String? = null
 ) {
-    if (!visible) return
+    // 退场动画播完才真正退出组合。不能像以前那样 `if (!visible) return` —— 那会在
+    // visible 转 false 的瞬间把内容卸载，scaleOut/fadeOut 一帧都播不出来。
+    // exitDone 只在「已经播完退场」后为 true，用于把组件彻底移出组合。
+    var exitDone by remember { mutableStateOf(false) }
+    LaunchedEffect(visible) { exitDone = false }
+    if (!visible && exitDone) return
 
     val actualConfirmText = confirmText ?: stringResource(R.string.edit_dialog_confirm)
     val actualDismissText = dismissText ?: stringResource(R.string.edit_dialog_cancel)
@@ -82,38 +140,23 @@ fun EditDialog(
     val errRangeTemplate = stringResource(R.string.edit_dialog_error_range)
     val errMaxLengthTemplate = stringResource(R.string.edit_dialog_error_max_length)
 
-    val values = remember(fields) {
-        mutableStateListOf<String>().apply {
-            addAll(fields.map { it.initialValue })
-        }
+    // 刻意**不** key 在 fields 上。fields 是调用点每次重组新建的 list，其中
+    // onValidate 是捕获 lambda、引用每次都变，于是 key 在 fields 上会让父层的任意
+    // 一次重组都把用户已输入的内容清空（以前靠调用点用 `if (show)` 把组件整个卸载
+    // 掩盖了这点；一旦改成用 visible 控制显隐、组件常驻就会暴露）。
+    // 这里只跟 initialValue：切换到另一个初始值不同的对话框时仍能正确重置。
+    val initialValues = remember(fields) { fields.map { it.initialValue } }
+    val values = remember(visible, initialValues) {
+        mutableStateListOf<String>().apply { addAll(initialValues) }
     }
 
-    LaunchedEffect(fields) {
-        values.clear()
-        values.addAll(fields.map { it.initialValue })
-    }
-
-    val errorMessages = fields.mapIndexed { index, config ->
-        val value = values[index]
-
-        if (config.keyboardType == KeyboardType.Number || config.keyboardType == KeyboardType.Decimal) {
-            val num = value.toDoubleOrNull()
-            if (value.isNotEmpty() && num == null) {
-                return@mapIndexed errInvalidNumber
-            }
-            if (num != null && config.range != null) {
-                if (num !in config.range) {
-                    return@mapIndexed errRangeTemplate.format(config.range.start, config.range.endInclusive)
-                }
-            }
-        }
-
-        if (config.maxLength != null && value.length > config.maxLength) {
-            return@mapIndexed errMaxLengthTemplate.format(config.maxLength)
-        }
-
-        config.onValidate?.invoke(value)
-    }
+    val errorMessages = validateEditFields(
+        fields = fields,
+        values = values,
+        invalidNumberError = errInvalidNumber,
+        rangeErrorTemplate = errRangeTemplate,
+        maxLengthErrorTemplate = errMaxLengthTemplate,
+    )
 
     val isAllValid = errorMessages.all { it == null }
 
@@ -124,15 +167,25 @@ fun EditDialog(
 
     val triggerDismiss = { shouldDismiss = true }
 
-    LaunchedEffect(Unit) {
-        isVisible = true
+    // isVisible 由 visible 驱动：调用点把 visible 置 false 就走退场路径。
+    LaunchedEffect(visible) {
+        isVisible = visible
     }
 
+    // 内部关闭（取消 / scrim / 返回手势）：先播退场，播完再通知调用方。
     LaunchedEffect(shouldDismiss) {
         if (shouldDismiss) {
             isVisible = false
             delay(200.milliseconds)
             onDismiss()
+        }
+    }
+
+    // 退场（无论由谁触发）播完后才把组件移出组合，否则内容会一直留在组合里。
+    LaunchedEffect(isVisible, visible) {
+        if (!isVisible && !visible) {
+            delay(200.milliseconds)
+            exitDone = true
         }
     }
 

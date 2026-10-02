@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -212,7 +211,11 @@ private fun SliderItemLayout(
     }
 
     if (showResetDialog && defaultValue != null) {
-        AlertDialog(
+        // 用 AnimatedAlertDialog 而不是原生 AlertDialog：后者绕开了本组件库的
+        // 宿主与动效，在 Miuix 风格下会露出 MD3 弹窗（圆角/字体都不对）。
+        // Miuix 分支见 KedgeEditDialog 之外的 Kedge 侧 AlertDialog 分发。
+        AnimatedAlertDialog(
+            visible = true,
             onDismissRequest = { showResetDialog = false },
             title = { Text(stringResource(R.string.slider_reset_title)) },
             text = { Text(stringResource(R.string.slider_reset_body)) },
